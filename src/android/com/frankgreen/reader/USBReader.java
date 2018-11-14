@@ -260,7 +260,12 @@ public class USBReader implements ACRReader {
                     receiveBuffer.length);
             listener.onData(receiveBuffer, len);
         } catch (ReaderException e) {
-            listener.onError(new ACRReaderException(e));
+            Log.d(TAG, "****slot***" + slot + "****** Not working");
+
+            UsbDevice _device = (UsbDevice) intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+
+            USBReader.this.open(_device);
+            // listener.onError(new ACRReaderException(e));
         }
     }
 

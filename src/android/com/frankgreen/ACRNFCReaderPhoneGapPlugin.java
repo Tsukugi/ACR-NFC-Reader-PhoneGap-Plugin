@@ -179,7 +179,7 @@ public class ACRNFCReaderPhoneGapPlugin extends CordovaPlugin {
                 Log.d(TAG, "currentState " + currentState);
 
                 if (slotNumber == 0 && currentState == Reader.CARD_PRESENT) {
-                    Log.d(TAG, "Ready to read!!!!");
+                    Log.d(TAG, "Something was read!!");
                     nfcReader.reset(slotNumber);
                 } else {// if (currentState == Reader.CARD_ABSENT && previousState ==
                         // Reader.CARD_PRESENT) {
