@@ -93,7 +93,7 @@ public class ACRNFCReaderPhoneGapPlugin extends CordovaPlugin {
             Log.d(TAG, action);
             if (ACTION_USB_PERMISSION.equals(action)) {
                 synchronized (this) {
-                    nfcReader.detach(intent);
+                    askForPermissions();
                     nfcReader.attach(intent);
                 }
             } else if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) {
@@ -101,8 +101,9 @@ public class ACRNFCReaderPhoneGapPlugin extends CordovaPlugin {
                     nfcReader.detach(intent);
                 }
             }
-
-            UsbDevice device = (UsbDevice) intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+            UsbManager manager = (UsbManager) getSystemService(Context.USB_SERVICE);
+            HashMap<String, UsbDevice> deviceList = manager.getDeviceList();
+            UsbDevice device = deviceList.get("deviceName");
             Log.d(TAG, "****** Something got connected!");
             Log.d(TAG, device.getDeviceName());
 
@@ -221,14 +222,18 @@ public class ACRNFCReaderPhoneGapPlugin extends CordovaPlugin {
             }
         });
         // Register receiver for USB permission
+        askForPermissions();
+        // setupTimer();
+        nfcReader.start();
+    }
+
+    public void askForPermissions() {
         mPermissionIntent = PendingIntent.getBroadcast(getActivity(), 0, new Intent(ACTION_USB_PERMISSION), 0);
         nfcReader.setPermissionIntent(mPermissionIntent);
         IntentFilter filter = new IntentFilter();
         filter.addAction(ACTION_USB_PERMISSION);
-        // filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
+        filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
         getActivity().registerReceiver(broadcastReceiver, filter);
-        setupTimer();
-        nfcReader.start();
     }
 
     @Override

@@ -61,12 +61,8 @@ public class USBReader implements ACRReader {
     public void attach(Intent intent) {
         Log.d(TAG, "--- Intent: " + intent.toString());
         UsbDevice device = (UsbDevice) intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
-        if (device != null) {
-            Log.d(TAG, "USB device attached: name: " + device.getDeviceName());
-        }
 
         if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
-
             if (device != null) {
                 Log.d(TAG, "Opening reader: " + device.getDeviceName() + "...");
                 if (onStatusChangeListener != null) {
@@ -74,10 +70,8 @@ public class USBReader implements ACRReader {
                 }
                 open(device);
             }
-
         } else {
             Log.w(TAG, "Permission denied for device " + device.getDeviceName());
-
         }
     }
 
