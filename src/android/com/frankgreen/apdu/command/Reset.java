@@ -39,7 +39,6 @@ public class Reset extends Base<BaseParams> implements OnDataListener {
         try {
             reader.getReader().power(getParams().getSlotNumber(), Reader.CARD_WARM_RESET, this);
         } catch (Exception e) {
-            reader.getReader().power(getParams().getSlotNumber(), Reader.CARD_COLD_RESET, this);
             return false;
         }
         return true;

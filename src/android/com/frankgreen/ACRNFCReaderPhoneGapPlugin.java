@@ -181,9 +181,9 @@ public class ACRNFCReaderPhoneGapPlugin extends CordovaPlugin {
 
                     if (slotNumber == 0 && currentState == Reader.CARD_PRESENT) {
                         Log.d(TAG, "Something was read!!");
-                        nfcReader.reset(slotNumber);
                     } else {
                         Log.d(TAG, "Card removed from Reader!!");
+                        nfcReader.reset(slotNumber);
                         webView.sendJavascript("ACR.runCardAbsent();");
                     }
                 } else {
