@@ -205,11 +205,13 @@ public class NFCReader {
     private boolean processing = false;
 
     public synchronized void reset(int slotNumber) {
+        processing = true;
         this.chipMeta = new ChipMeta();
         BaseParams baseParams = new BaseParams(slotNumber);
         baseParams.setReader(this);
         baseParams.setOnGetResultListener(acrReader.getOnTouchListener());
         new ResetTask().execute(baseParams);
+        processing = false;
     }
 
     public boolean isProcessing() {

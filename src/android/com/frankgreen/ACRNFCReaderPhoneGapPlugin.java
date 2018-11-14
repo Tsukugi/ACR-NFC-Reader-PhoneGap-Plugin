@@ -173,20 +173,22 @@ public class ACRNFCReaderPhoneGapPlugin extends CordovaPlugin {
 
             @Override
             public void onStateChange(int slotNumber, int previousState, int currentState) {
-                // if (!nfcReader.isProcessing()) {
-                Log.d(TAG, "slotNumber " + slotNumber);
-                Log.d(TAG, "previousState " + previousState);
-                Log.d(TAG, "currentState " + currentState);
+                if (!nfcReader.isProcessing()) {
+                    Log.d(TAG, "slotNumber " + slotNumber);
+                    Log.d(TAG, "previousState " + previousState);
+                    Log.d(TAG, "currentState " + currentState);
 
-                if (slotNumber == 0 && currentState == Reader.CARD_PRESENT) {
-                    Log.d(TAG, "Something was read!!");
-                    nfcReader.reset(slotNumber);
-                } else {// if (currentState == Reader.CARD_ABSENT && previousState ==
-                        // Reader.CARD_PRESENT) {
-                    Log.d(TAG, "Card Lost");
-                    webView.sendJavascript("ACR.runCardAbsent();");
+                    if (slotNumber == 0 && currentState == Reader.CARD_PRESENT) {
+                        Log.d(TAG, "Something was read!!");
+                        nfcReader.reset(slotNumber);
+                    } else {// if (currentState == Reader.CARD_ABSENT && previousState ==
+                            // Reader.CARD_PRESENT) {
+                        Log.d(TAG, "Card Lost");
+                        webView.sendJavascript("ACR.runCardAbsent();");
+                    }
+                } else {
+                    Log.d("****** Reader is not ready");
                 }
-                // }
             }
         });
 
