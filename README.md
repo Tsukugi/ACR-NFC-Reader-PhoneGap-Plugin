@@ -1,17 +1,6 @@
-### create a new plugin
-```bash
-plugman create --name ACR-NFC-Reader-PhoneGap-Plugin --plugin_id com.frankgreen --plugin_version 0.0.1
-```
-
-### add a platform
-```bash
-plugman platform add --platform_name android
-```
-
-
 ### install to project
 ```bash
-git clone git@github.com:MorningCoffeeDev/ACR-NFC-Reader-PhoneGap-Plugin.git
+git clone git@github.com:Tsukugi/ACR-NFC-Reader-PhoneGap-Plugin.git
 cordova plugin add ../ACR-NFC-Reader-PhoneGap-Plugin/
 ```
 
@@ -29,12 +18,12 @@ __Example__
   }
 ```
 
-#### ACR.addTagIdListener
+#### ACR.addTagListener
 
-Registers an event listener for Reader
+Registers an event listener for Reader, retrieves Object with Tag data.
 
 ```javascript
-  ACR.addTagIdListener(success,failure);
+  ACR.addTagListener(success,failure);
 ```
 
 __Parameters__
@@ -45,12 +34,12 @@ __Parameters__
 __Example__
 
 ```javascript
-  ACR.addTagIdListener(
+  ACR.addTagListener(
       function(result){
-        alert("UID: " + JSON.stringify(result));
+        alert(JSON.stringify(result));
       },
       function(result){
-        alert("UID Failure: " + JSON.stringify(result));
+        alert(JSON.stringify(result));
       }
   );
 ```
