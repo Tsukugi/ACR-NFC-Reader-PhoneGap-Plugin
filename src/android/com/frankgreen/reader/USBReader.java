@@ -175,6 +175,7 @@ public class USBReader implements ACRReader {
     @Override
     public byte[] power(int slotNum, int action, OnDataListener listener) throws ACRReaderException {
         try {
+            mReader.power(0, Reader.CARD_WARM_RESET);
             listener.onData(this.mReader.power(slotNum, action), this.mReader.power(slotNum, action).length);
             return null;
         } catch (ReaderException e) {
