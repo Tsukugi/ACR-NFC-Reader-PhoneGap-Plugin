@@ -60,13 +60,10 @@ public class USBReader implements ACRReader {
     @Override
     public void attach(Intent intent) {
         Log.d(TAG, "--- Intent: " + intent.toString());
-        if (intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_ATTACHED)) {
-            UsbDevice usbDevice = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
-            if (usbDevice != null) {
-                Log.d("onResume", "USB device attached: name: " + usbDevice.getDeviceName());
-            }
-        }
         UsbDevice device = (UsbDevice) intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+        if (usbDevice != null) {
+            Log.d(TAG, "USB device attached: name: " + usbDevice.getDeviceName());
+        }
 
         if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
 
