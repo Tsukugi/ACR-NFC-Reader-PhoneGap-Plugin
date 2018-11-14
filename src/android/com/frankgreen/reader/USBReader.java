@@ -261,6 +261,7 @@ public class USBReader implements ACRReader {
             listener.onData(receiveBuffer, len);
         } catch (ReaderException e) {
             Log.d(TAG, "****slot***" + slot + "****** Not working");
+            USBReader.this.control(slot + 1, sendBuffer, listener);
             // listener.onError(new ACRReaderException(e));
         }
     }

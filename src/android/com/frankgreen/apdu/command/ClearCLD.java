@@ -28,17 +28,6 @@ public class ClearCLD extends Base<ClearLCDParams> implements OnDataListener {
         Log.d(TAG, Util.toHexString(sendBuffer));
         ACRReader acrReader = this.getParams().getReader().getReader();
         acrReader.control(0, sendBuffer, this);
-//        try {
-//            int byteCount = acrReader.control(0, Reader.IOCTL_CCID_ESCAPE, sendBuffer, sendBuffer.length, receiveBuffer, receiveBuffer.length);
-//            result = new Result("ClearCLD", byteCount, receiveBuffer);
-//        } catch (ACRReaderException e) {
-//            result = new Result("ClearCLD", e);
-//            e.printStackTrace();
-//        }
-//
-//        if (this.getParams().getOnGetResultListener() != null) {
-//            this.getParams().getOnGetResultListener().onResult(result);
-//        }
         return true;
     }
 
