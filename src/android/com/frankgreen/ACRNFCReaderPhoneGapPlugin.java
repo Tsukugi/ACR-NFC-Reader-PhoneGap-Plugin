@@ -95,18 +95,17 @@ public class ACRNFCReaderPhoneGapPlugin extends CordovaPlugin {
                 synchronized (this) {
                     nfcReader.attach(intent);
                 }
-            } else if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) {
+            } else /*if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) */{
                 synchronized (this) {
                     nfcReader.detach(intent);
                 }
             }
-            
+
             UsbDevice device = (UsbDevice) intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
-            if (intent.getExtras().getBoolean("connected")) {
-                Log.d(TAG, "****** Something got connected!");
-                Log.d(TAG, intent.getExtras());
-                Log.d(TAG, device);
-            }
+            Log.d(TAG, "****** Something got connected!");
+            Log.d(TAG, intent.getExtras());
+            Log.d(TAG, device);
+
         }
     };
 
