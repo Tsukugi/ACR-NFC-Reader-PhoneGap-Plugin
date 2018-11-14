@@ -187,7 +187,7 @@ public class ACRNFCReaderPhoneGapPlugin extends CordovaPlugin {
                         webView.sendJavascript("ACR.runCardAbsent();");
                     }
                 } else {
-                    Log.d("****** Reader is not ready");
+                    Log.d(TAG,"****** Reader is not ready");
                 }
             }
         });
