@@ -93,9 +93,10 @@ public class ACRNFCReaderPhoneGapPlugin extends CordovaPlugin {
             Log.d(TAG, action);
             if (ACTION_USB_PERMISSION.equals(action)) {
                 synchronized (this) {
+                    nfcReader.detach(intent);
                     nfcReader.attach(intent);
                 }
-            } else /*if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) */{
+            } else if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) {
                 synchronized (this) {
                     nfcReader.detach(intent);
                 }
