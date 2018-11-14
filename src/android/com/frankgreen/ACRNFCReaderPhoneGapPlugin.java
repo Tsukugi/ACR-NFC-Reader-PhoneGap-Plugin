@@ -103,8 +103,7 @@ public class ACRNFCReaderPhoneGapPlugin extends CordovaPlugin {
 
             UsbDevice device = (UsbDevice) intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
             Log.d(TAG, "****** Something got connected!");
-            Log.d(TAG, intent.getExtras());
-            Log.d(TAG, device);
+            Log.d(TAG, device.getDeviceName());
 
         }
     };
