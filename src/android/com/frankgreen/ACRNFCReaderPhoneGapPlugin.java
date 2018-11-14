@@ -100,6 +100,9 @@ public class ACRNFCReaderPhoneGapPlugin extends CordovaPlugin {
                     nfcReader.detach(intent);
                 }
             }
+            if (intent.getExtras().getBoolean("connected")) {
+                // do your stuff
+            }
         }
     };
 
@@ -133,6 +136,7 @@ public class ACRNFCReaderPhoneGapPlugin extends CordovaPlugin {
     private void setupTimer() {
         timer = new Timer();
         StopSessionTimerTask task = new StopSessionTimerTask(nfcReader);
+        Log.d(TAG, "****** Closing session for nfc Reader");
         timer.schedule(task, 10000, 5000);
     }
 
@@ -187,7 +191,7 @@ public class ACRNFCReaderPhoneGapPlugin extends CordovaPlugin {
                         webView.sendJavascript("ACR.runCardAbsent();");
                     }
                 } else {
-                    Log.d(TAG,"****** Reader is not ready");
+                    Log.d(TAG, "****** Reader is not ready");
                 }
             }
         });
@@ -214,12 +218,11 @@ public class ACRNFCReaderPhoneGapPlugin extends CordovaPlugin {
             }
         });
         // Register receiver for USB permission
-
         mPermissionIntent = PendingIntent.getBroadcast(getActivity(), 0, new Intent(ACTION_USB_PERMISSION), 0);
         nfcReader.setPermissionIntent(mPermissionIntent);
         IntentFilter filter = new IntentFilter();
         filter.addAction(ACTION_USB_PERMISSION);
-        filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
+        //filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
         getActivity().registerReceiver(broadcastReceiver, filter);
         setupTimer();
         nfcReader.start();
