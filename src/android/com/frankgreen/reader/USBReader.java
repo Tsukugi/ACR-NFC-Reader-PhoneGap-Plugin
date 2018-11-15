@@ -179,7 +179,7 @@ public class USBReader implements ACRReader {
             return null;
         } catch (ReaderException e) {
             Log.w(TAG, "Error: -----------: Something went wrong");
-           // Log.w(TAG, e);
+            // Log.w(TAG, e);
             return null;
         }
     }
@@ -203,6 +203,7 @@ public class USBReader implements ACRReader {
                 // acrReader.open(params[0]);
             } catch (Exception e) {
                 result = e;
+                e.printStackTrace();
             }
             return result;
         }
@@ -245,7 +246,7 @@ public class USBReader implements ACRReader {
             int len = mReader.transmit(slot, sendBuffer, sendBuffer.length, receiveBuffer, receiveBuffer.length);
             listener.onData(receiveBuffer, len);
         } catch (ReaderException e) {
-            listener.onError(new ACRReaderException(e));
+            e.printStackTrace();
         }
     }
 
@@ -259,11 +260,10 @@ public class USBReader implements ACRReader {
             listener.onData(receiveBuffer, len);
         } catch (ReaderException e) {
             Log.d(TAG, "****slot***" + slot + "****** Not working");
-            Log.d(TAG, e);
             if (slot + 1 < USBReader.this.getmSlotList().size()) {
                 USBReader.this.control(slot + 1, sendBuffer, listener);
             }
-            listener.onError(new ACRReaderException(e));
+            e.printStackTrace();
         }
     }
 
