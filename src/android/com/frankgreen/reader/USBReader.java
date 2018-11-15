@@ -260,7 +260,7 @@ public class USBReader implements ACRReader {
             listener.onData(receiveBuffer, len);
         } catch (CommunicationErrorException e) {
             Log.d(TAG, "****slot***" + slot + "****** Not working");
-            Log.d(TAG, new String(e.getCcidErrorCode(), "UTF-8"));
+            Log.d(TAG, Byte.toString(e.getCcidErrorCode()));
             if (slot + 1 < USBReader.this.getmSlotList().size()) {
                 USBReader.this.control(slot + 1, sendBuffer, listener);
             }
