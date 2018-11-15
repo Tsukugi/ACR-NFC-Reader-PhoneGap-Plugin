@@ -24,7 +24,7 @@ public class USBReader implements ACRReader {
     public static StatusChangeListener onStatusChangeListener;
     private static final String TAG = "ACRReader";
     private UsbManager mManager;
-    private Reader mReader;
+    private java.io.Reader mReader;
     private List<String> mReaderList;
     private List<String> mSlotList;
     private OnGetResultListener onTouchListener;
@@ -260,13 +260,15 @@ public class USBReader implements ACRReader {
             listener.onData(receiveBuffer, len);
         } catch (ReaderException e) {
             Log.d(TAG, "****slot***" + slot + "****** Not working");
-            Log.d(TAG, "---------------------- Reader is connected:" + new String(mReader.getAtr(slot)));
             Log.d(TAG, "---------------------- Reader is connected:" + mReader.getProtocol(slot));
             Log.d(TAG, "---------------------- Reader is connected:" + mReader.getReaderName());
             Log.d(TAG, "---------------------- Reader is connected:" + mReader.isOpened());
             if (slot + 1 < USBReader.this.getmSlotList().size()) {
                 USBReader.this.control(slot + 1, sendBuffer, listener);
+            } else {
+                mReader.close();
             }
+
         }
     }
 
