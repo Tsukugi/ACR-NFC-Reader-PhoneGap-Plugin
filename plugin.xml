@@ -105,7 +105,7 @@
     <source-file src="src/android/com/frankgreen/operate/OperateDataListener.java" target-dir="src/com/frankgreen/operate" />
     <source-file src="src/android/com/frankgreen/operate/OperateResult.java" target-dir="src/com/frankgreen/operate" />
 
-    <source-file src="src/android/libs/acssmc-1.1.2.jar" target-dir="libs" />
+    <source-file src="src/android/libs/acssmc-1.1.4.jar" target-dir="libs" />
     <source-file src="src/android/libs/acsbt-1.0.0preview7.jar" target-dir="libs"/>
     <source-file src="src/android/com/frankgreen/Utils.java" target-dir="src/android/com/frankgreen"/>
   </platform>
