@@ -260,7 +260,6 @@ public class USBReader implements ACRReader {
             listener.onData(receiveBuffer, len);
         } catch (ReaderException e) {
             Log.d(TAG, "****slot***" + slot + "****** Not working");
-            
             Log.d(TAG, "---------------------- Reader is connected:" + new String(mReader.getAtr(slot)));
             Log.d(TAG, "---------------------- Reader is connected:" + mReader.getProtocol(slot));
             Log.d(TAG, "---------------------- Reader is connected:" + mReader.getReaderName());
@@ -268,8 +267,6 @@ public class USBReader implements ACRReader {
             if (slot + 1 < USBReader.this.getmSlotList().size()) {
                 USBReader.this.control(slot + 1, sendBuffer, listener);
             }
-        } catch (CommunicationErrorException e) {
-            Log.d(TAG, Byte.toString(e.getCcidErrorCode()));
         }
     }
 
