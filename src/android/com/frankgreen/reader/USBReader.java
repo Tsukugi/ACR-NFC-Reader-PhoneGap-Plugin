@@ -24,7 +24,7 @@ public class USBReader implements ACRReader {
     public static StatusChangeListener onStatusChangeListener;
     private static final String TAG = "ACRReader";
     private UsbManager mManager;
-    private java.io.Reader mReader;
+    private Reader mReader;
     private List<String> mReaderList;
     private List<String> mSlotList;
     private OnGetResultListener onTouchListener;
