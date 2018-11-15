@@ -16,7 +16,7 @@ public class AutoStartPolling extends Base<PICCOperatingParameterParams> impleme
 
     public boolean run(TaskListener taskListener) {
         super.run(taskListener);
-        byte[] sendBuffer = new byte[]{(byte) 0xE0, (byte) 0x00, (byte) 0x00, (byte) 0x40, (byte) 0x01};
+        byte[] sendBuffer = new byte[]{(byte) 0xE0, (byte) 0x00, (byte) 0x00, (byte) 0x23, (byte) 0x01};
 
         ACRReader reader = this.getParams().getReader().getReader();
         reader.control(0, sendBuffer, this);
