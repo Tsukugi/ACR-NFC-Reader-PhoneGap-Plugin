@@ -174,21 +174,18 @@ public class ACRNFCReaderPhoneGapPlugin extends CordovaPlugin {
 
             @Override
             public void onStateChange(int slotNumber, int previousState, int currentState) {
-                if (!nfcReader.isProcessing()) {
-                    Log.d(TAG, "slotNumber " + slotNumber);
-                    Log.d(TAG, "previousState " + previousState);
-                    Log.d(TAG, "currentState " + currentState);
+                Log.d(TAG, "slotNumber " + slotNumber);
+                Log.d(TAG, "previousState " + previousState);
+                Log.d(TAG, "currentState " + currentState);
 
-                    if (slotNumber == 0 && currentState == Reader.CARD_PRESENT) {
-                        Log.d(TAG, "Something was read!!");
-                        nfcReader.reset(slotNumber);
-                    } else {
-                        Log.d(TAG, "Card removed from Reader!!");
-                        webView.sendJavascript("ACR.runCardAbsent();");
-                    }
+                if (slotNumber == 0 && currentState == Reader.CARD_PRESENT) {
+                    Log.d(TAG, "Something was read!!");
+                    nfcReader.reset(slotNumber);
                 } else {
-                    Log.d(TAG, "****** Reader is not ready");
+                    Log.d(TAG, "Card removed from Reader!!");
+                    webView.sendJavascript("ACR.runCardAbsent();");
                 }
+
             }
         });
 
@@ -217,9 +214,11 @@ public class ACRNFCReaderPhoneGapPlugin extends CordovaPlugin {
         usbManager = (UsbManager) cordova.getActivity().getSystemService(Context.USB_SERVICE);
         mPermissionIntent = PendingIntent.getBroadcast(getActivity(), 0, new Intent(ACTION_USB_PERMISSION), 0);
         nfcReader.setPermissionIntent(mPermissionIntent);
+
         IntentFilter filter = new IntentFilter();
         filter.addAction(ACTION_USB_PERMISSION);
         filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
+
         getActivity().registerReceiver(broadcastReceiver, filter);
         setupTimer();
         nfcReader.start();
