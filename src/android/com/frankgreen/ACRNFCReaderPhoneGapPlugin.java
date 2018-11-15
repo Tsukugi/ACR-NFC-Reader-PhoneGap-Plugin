@@ -221,7 +221,7 @@ public class ACRNFCReaderPhoneGapPlugin extends CordovaPlugin {
         filter.addAction(ACTION_USB_PERMISSION);
         filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
         getActivity().registerReceiver(broadcastReceiver, filter);
-        // setupTimer();
+        setupTimer();
         nfcReader.start();
     }
 
@@ -498,6 +498,7 @@ public class ACRNFCReaderPhoneGapPlugin extends CordovaPlugin {
 
     @Override
     public void onDestroy() {
+        getActivity().unregisterReceiver(broadcastReceiver);
         if (timer != null) {
             timer.cancel();
             timer = null;

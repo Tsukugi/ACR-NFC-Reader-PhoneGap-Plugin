@@ -25,8 +25,9 @@ public class StopSessionTimerTask extends TimerTask {
 
     @Override
     public void run() {
-//        Log.d(TAG, "Check running session");
-        if (this.reader.getSessionStartedAt() > 0 &&  this.reader.getSessionStartedAt() < System.currentTimeMillis() - (1000 * 6)) {
+        Log.d(TAG, "Check running session");
+        if (this.reader.getSessionStartedAt() > 0
+                && this.reader.getSessionStartedAt() < System.currentTimeMillis() - (1000 * 6)) {
             Log.w(TAG, "Found running session");
             InitNTAGParams params = new InitNTAGParams(0);
             params.setReader(reader);
