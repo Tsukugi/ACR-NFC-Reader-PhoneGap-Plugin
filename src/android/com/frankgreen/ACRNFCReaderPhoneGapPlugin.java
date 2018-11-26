@@ -1,7 +1,7 @@
 package com.frankgreen;
 
 /**
- * Created by kevin on 5/20/15.
+ * Created by Tsukugi on 26/11/18.
  */
 
 import android.app.Activity;
@@ -14,10 +14,12 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.acs.bluetooth.*;
 import com.acs.smartcard.Reader;
+import com.acs.smartcard.Reader.OnStateChangeListener;
 import com.frankgreen.apdu.OnGetResultListener;
 import com.frankgreen.apdu.Result;
 import com.frankgreen.params.*;
@@ -27,9 +29,12 @@ import com.frankgreen.reader.USBReader;
 import com.frankgreen.task.StopSessionTimerTask;
 
 import org.apache.cordova.*;
+import org.apache.cordova.api.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 
 /**
@@ -71,6 +76,11 @@ public class ACRNFCReaderPhoneGapPlugin extends CordovaPlugin {
 
     private NFCReader nfcReader;
 
+    private Reader mReader;
+    private UsbManager mManager;
+    private List<String> mReaderList;
+    private List<String> mSlotList;
+    
     private UsbManager usbManager;
 
     private BluetoothReaderManager bluetoothReaderManager;
@@ -85,8 +95,121 @@ public class ACRNFCReaderPhoneGapPlugin extends CordovaPlugin {
     PendingIntent mPermissionIntent;
 
     private static final String ACTION_USB_PERMISSION = "com.android.example.USB_PERMISSION";
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
 
-    private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+
+            String action = intent.getAction();
+
+            if (ACTION_USB_PERMISSION.equals(action)) {
+
+                synchronized (this) {
+
+                    UsbDevice device = (UsbDevice) intent
+                            .getParcelableExtra(UsbManager.EXTRA_DEVICE);
+
+                    if (intent.getBooleanExtra(
+                            UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
+
+                        if (device != null) {
+
+                            // Open reader
+                        	Log.d(TAG,"Opening reader: " + device.getDeviceName() + "...");
+                            new OpenTask().execute(device);
+                        }
+
+                    } else {
+
+                    	Log.d(TAG, "Permission denied for device " + device.getDeviceName());
+                    	
+                    }
+                }
+
+            } else if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) {
+
+                synchronized (this) {
+                	 if (mReaderList == null) {
+                         mReaderList = new ArrayList<String>();
+                     }
+                	 
+                     mReaderList.clear();
+                     
+                     for (UsbDevice device : mManager.getDeviceList().values()) {
+                         if (mReader.isSupported(device)) {
+                             mReaderList.add(device.getDeviceName());
+                         }
+                     }
+
+                     UsbDevice device = (UsbDevice) intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+
+                     if (device != null && device.equals(mReader.getDevice())) {
+                         if (mSlotList != null) {
+                             mSlotList.clear();
+                         }
+
+                         new CloseTask().execute();
+                     }
+                     Log.d(TAG, "Closing reader...");
+                     /*if (onStatusChangeListener != null) {
+                         onStatusChangeListener.onDetach(new ACRDevice<UsbDevice>(device));
+                     }*/
+                }
+            }
+        }
+    };
+    
+    private class OpenTask extends AsyncTask<UsbDevice, Void, Exception> {
+
+        @Override
+        protected Exception doInBackground(UsbDevice... params) {
+
+            Exception result = null;
+
+            try {
+
+                mReader.open(params[0]);
+
+            } catch (Exception e) {
+
+                result = e;
+            }
+
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(Exception result) {
+
+            if (result != null) {
+
+            	Log.d(TAG,result.toString());
+
+            } else {
+
+            	Log.d(TAG,"Reader name: " + mReader.getReaderName());
+
+                int numSlots = mReader.getNumSlots();
+                Log.d(TAG,"Number of slots: " + numSlots);
+            }
+        }
+    }
+
+    private class CloseTask extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            mReader.close();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+        }
+
+    }
+    
+    /*private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
 
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
@@ -101,7 +224,7 @@ public class ACRNFCReaderPhoneGapPlugin extends CordovaPlugin {
                 }
             }
         }
-    };
+    };*/
 
     @Override
     public void initialize(CordovaInterface cordova, final CordovaWebView webView) {
@@ -110,74 +233,39 @@ public class ACRNFCReaderPhoneGapPlugin extends CordovaPlugin {
         this.pluginActivity = cordova.getActivity();
 
         Log.d(TAG, "initializing...");
-        /*
-         * if (pluginActivity.getPackageManager().hasSystemFeature(PackageManager.
-         * FEATURE_BLUETOOTH_LE)) { mBluetoothManager = (BluetoothManager)
-         * pluginActivity.getSystemService(Context.BLUETOOTH_SERVICE); mBluetoothAdapter
-         * = mBluetoothManager.getAdapter(); if (mBluetoothAdapter == null ||
-         * !mBluetoothAdapter.isEnabled()) { Intent enableBtIntent = new
-         * Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-         * cordova.getActivity().startActivityForResult(enableBtIntent,
-         * REQUEST_ENABLE_BT); } useBluetoothReader(cordova, webView);
-         * 
-         * } else {
-         */
+        
         isSupportedBlueTooth = false;
         useUsbReader(cordova, webView);
         // }
 
     }
-
-    private Timer timer;
-
-    private void setupTimer() {
-        timer = new Timer();
-        StopSessionTimerTask task = new StopSessionTimerTask(nfcReader);
-        Log.d(TAG, "****** Closing session for nfc Reader");
-        timer.schedule(task, 10000, 5000);
-    }
-
-    private void useBluetoothReader(CordovaInterface cordova, final CordovaWebView webView) {
-        ACRReader reader = new BTReader(mBluetoothManager, getActivity());
-
-        nfcReader = new NFCReader(reader, webView);
-
-        nfcReader.setOnStatusChangeListener(new ACRReader.StatusChangeListener() {
-
-            @Override
-            public void onReady(ACRReader reader) {
-                Log.d(TAG, "onReady");
-                initReader(null, null);
-                webView.sendJavascript("ACR.onReady('" + reader.getReaderName() + "');");
-            }
-
-            @Override
-            public void onAttach(ACRDevice device) {
-                Log.d(TAG, "onAttach");
-                webView.sendJavascript("ACR.onAttach('" + ((BluetoothDevice) device.getDevice()).getName() + "');");
-            }
-
-            @Override
-            public void onDetach(ACRDevice device) {
-                Log.d(TAG, "onDetach");
-                webView.sendJavascript("ACR.onDetach('" + ((BluetoothDevice) device.getDevice()).getName() + "');");
-            }
-        });
-        nfcReader.start();
-    }
-
+    
     private void useUsbReader(CordovaInterface cordova, final CordovaWebView webView) {
-        usbManager = (UsbManager) cordova.getActivity().getSystemService(Context.USB_SERVICE);
-        ACRReader reader = new USBReader(usbManager);
-        nfcReader = new NFCReader(reader);
-        nfcReader.setOnStateChangeListener(new Reader.OnStateChangeListener() {
+    	// Get USB manager
+		usbManager = (UsbManager) cordova.getActivity().getSystemService(Context.USB_SERVICE);
+		ACRReader reader = new USBReader(usbManager);
+		nfcReader = new NFCReader(reader);
+         
+        // Initialize reader
+        mReader = new Reader(mManager);
+        mReader.setOnStateChangeListener(new Reader.OnStateChangeListener() {
 
             @Override
             public void onStateChange(int slotNumber, int previousState, int currentState) {
                 Log.d(TAG, "slotNumber " + slotNumber);
                 Log.d(TAG, "previousState " + previousState);
                 Log.d(TAG, "currentState " + currentState);
+               
+                if (previousState < Reader.CARD_UNKNOWN
+                        || previousState > Reader.CARD_SPECIFIC) {
+                	previousState = Reader.CARD_UNKNOWN;
+                }
 
+                if (currentState < Reader.CARD_UNKNOWN
+                        || currentState > Reader.CARD_SPECIFIC) {
+                	currentState = Reader.CARD_UNKNOWN;
+                }
+                
                 if (slotNumber == 0 && currentState == Reader.CARD_PRESENT) {
                     Log.d(TAG, "Something was read!!");
                     nfcReader.reset(slotNumber);
@@ -209,19 +297,15 @@ public class ACRNFCReaderPhoneGapPlugin extends CordovaPlugin {
                 Log.d(TAG, "onDetach");
                 webView.sendJavascript("ACR.onDetach('" + ((UsbDevice) device.getDevice()).getDeviceName() + "');");
             }
-        });
+        });        
         // Register receiver for USB permission
-        usbManager = (UsbManager) cordova.getActivity().getSystemService(Context.USB_SERVICE);
         mPermissionIntent = PendingIntent.getBroadcast(getActivity(), 0, new Intent(ACTION_USB_PERMISSION), 0);
-        nfcReader.setPermissionIntent(mPermissionIntent);
-
         IntentFilter filter = new IntentFilter();
         filter.addAction(ACTION_USB_PERMISSION);
         filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
-
-        getActivity().registerReceiver(broadcastReceiver, filter);
-        setupTimer();
-        nfcReader.start();
+        getActivity().registerReceiver(mReceiver, filter);
+        
+        //nfcReader.start();
     }
 
     @Override
@@ -313,13 +397,6 @@ public class ACRNFCReaderPhoneGapPlugin extends CordovaPlugin {
         // nfcReader.getBatteryLevel(baseParams);
         callbackContext.success(nfcReader.getReader().getBatteryLevelValue());
     }
-
-    // private void connectReader(final CallbackContext callbackContext) {
-    // if (nfcReader != null) {
-    // Log.d(TAG, "$$$$Try to connect");
-    // nfcReader.connect();
-    // }
-    // }
 
     public void connectReader(final CallbackContext callbackContext, JSONArray data) {
         if (nfcReader != null) {
@@ -496,12 +573,14 @@ public class ACRNFCReaderPhoneGapPlugin extends CordovaPlugin {
     }
 
     @Override
-    public void onDestroy() {
-        getActivity().unregisterReceiver(broadcastReceiver);
-        if (timer != null) {
-            timer.cancel();
-            timer = null;
-        }
+	public void onDestroy() {
+
+        // Close reader
+        mReader.close();
+
+        // Unregister receiver
+        getActivity().unregisterReceiver(mReceiver);
+
         super.onDestroy();
     }
 }

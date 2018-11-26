@@ -19,7 +19,7 @@ import com.frankgreen.apdu.OnGetResultListener;
 import com.frankgreen.operate.CustomDevice;
 import com.frankgreen.operate.OperateDataListener;
 import com.frankgreen.operate.OperateResult;
-import org.apache.cordova.CallbackContext;
+import org.apache.cordova.api.*;
 import org.json.JSONException;
 import org.json.JSONObject;
 

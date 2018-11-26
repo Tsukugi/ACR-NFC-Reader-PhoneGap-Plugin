@@ -14,7 +14,7 @@ import com.frankgreen.ACRDevice;
 import com.frankgreen.NFCReader;
 import com.frankgreen.apdu.OnGetResultListener;
 import com.frankgreen.operate.OperateDataListener;
-import org.apache.cordova.CallbackContext;
+import org.apache.cordova.api.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +32,7 @@ public class USBReader implements ACRReader {
     private boolean ready = false;
     private String readerType = "";
     private NFCReader nfcReader;
-
+    
     @Override
     public void setNfcReader(NFCReader nfcReader) {
         this.nfcReader = nfcReader;
@@ -60,19 +60,24 @@ public class USBReader implements ACRReader {
 
     @Override
     public void attach(Intent intent) {
-        Log.d(TAG, "--- Intent: " + intent.toString());
         UsbDevice device = (UsbDevice) intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
 
         if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
+
             if (device != null) {
+
                 Log.d(TAG, "Opening reader: " + device.getDeviceName() + "...");
                 if (onStatusChangeListener != null) {
                     onStatusChangeListener.onAttach(new ACRDevice<UsbDevice>(device));
                 }
                 open(device);
+
             }
+
         } else {
+
             Log.w(TAG, "Permission denied for device " + device.getDeviceName());
+
         }
     }
 
@@ -203,7 +208,6 @@ public class USBReader implements ACRReader {
                 // acrReader.open(params[0]);
             } catch (Exception e) {
                 result = e;
-                e.printStackTrace();
             }
             return result;
         }
@@ -218,18 +222,20 @@ public class USBReader implements ACRReader {
 
                 int numSlots = USBReader.this.getNumSlots();
                 Log.d(TAG, "Number of slots: " + numSlots);
-                USBReader.this.setReady(true);
+
                 if (USBReader.this.getOnStatusChangeListener() != null) {
                     USBReader.this.getOnStatusChangeListener().onReady(USBReader.this);
                 }
-                // Add slot items
-                if (USBReader.this.getmSlotList() == null) {
-                    USBReader.this.setmSlotList(new ArrayList<String>());
-                }
+
                 USBReader.this.getmSlotList().clear();
                 for (int i = 0; i < numSlots; i++) {
                     USBReader.this.getmSlotList().add(Integer.toString(i));
                 }
+
+                USBReader.this.setReady(true);
+
+                // Remove all control codes
+                //mFeatures.clear();
             }
         }
     }
@@ -252,23 +258,13 @@ public class USBReader implements ACRReader {
 
     @Override
     public void control(int slot, byte[] sendBuffer, OnDataListener listener) {
-        Log.d(TAG, "****slot***" + slot);
         byte[] receiveBuffer = new byte[30];
         try {
             int len = mReader.control(slot, Reader.IOCTL_CCID_ESCAPE, sendBuffer, sendBuffer.length, receiveBuffer,
                     receiveBuffer.length);
             listener.onData(receiveBuffer, len);
         } catch (ReaderException e) {
-            Log.d(TAG, "****slot***" + slot + "****** Not working");
-            Log.d(TAG, "---------------------- Reader is connected:" + mReader.getProtocol(slot));
-            Log.d(TAG, "---------------------- Reader is connected:" + mReader.getReaderName());
-            Log.d(TAG, "---------------------- Reader is connected:" + mReader.isOpened());
-            if (slot + 1 < USBReader.this.getmSlotList().size()) {
-                USBReader.this.control(slot + 1, sendBuffer, listener);
-            } else {
-                mReader.close();
-            }
-
+        	
         }
     }
 

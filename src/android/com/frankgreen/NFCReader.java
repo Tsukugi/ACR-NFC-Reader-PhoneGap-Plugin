@@ -12,7 +12,7 @@ import com.frankgreen.reader.ACRReader;
 import com.frankgreen.task.*;
 
 import com.frankgreen.params.*;
-import org.apache.cordova.CallbackContext;
+import org.apache.cordova.api.*;
 import org.apache.cordova.CordovaWebView;
 
 /**

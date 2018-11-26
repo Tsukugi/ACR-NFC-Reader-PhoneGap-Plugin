@@ -1,6 +1,6 @@
 package com.frankgreen.params;
 
-import org.apache.cordova.CallbackContext;
+import org.apache.cordova.api.*;
 
 /**
  * Created by cain on 16/4/26.

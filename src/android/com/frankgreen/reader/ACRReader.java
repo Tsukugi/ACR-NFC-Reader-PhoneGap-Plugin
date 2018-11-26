@@ -9,7 +9,7 @@ import com.frankgreen.ACRDevice;
 import com.frankgreen.NFCReader;
 import com.frankgreen.apdu.OnGetResultListener;
 import com.frankgreen.operate.OperateDataListener;
-import org.apache.cordova.CallbackContext;
+import org.apache.cordova.api.CallbackContext;
 
 import java.util.List;
 
