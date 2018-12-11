@@ -15,7 +15,7 @@ public class Beep extends Base<BaseParams> implements OnDataListener {
     }
 
     public boolean run() {
-        byte[] sendBuffer = new byte[]{(byte) 0xE0, (byte) 0x00, (byte) 0x00, (byte) 0x28, (byte) 0x01, (byte) 0xFF};
+        byte[] sendBuffer = new byte[]{(byte) 0xE0, (byte) 0x00, (byte) 0x00, (byte) 0x28, (byte) 0x01, (byte) 0x01};
 
         ACRReader reader = this.getParams().getReader().getReader();
         reader.control(0, sendBuffer, this);
