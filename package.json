@@ -1,0 +1,23 @@
+{
+  "name": "acr-nfc-reader-phonegap-plugin",
+  "version": "1.0.0",
+  "description": "PhoneGap plugin for communicating with ACS NFC readers. Currently supports Android and uses version 1.1.4 of the ACR drivers.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tsukugi/ACR-NFC-Reader-PhoneGap-Plugin.git"
+  },
+  "keywords": [
+    "ACR",
+    "cordova"
+  ],
+  "author": "Tsukugi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Tsukugi/ACR-NFC-Reader-PhoneGap-Plugin/issues"
+  },
+  "homepage": "https://github.com/Tsukugi/ACR-NFC-Reader-PhoneGap-Plugin#readme"
+}
